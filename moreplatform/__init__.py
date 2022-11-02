@@ -269,7 +269,22 @@ def replace_isolated(path, old, new, case_sensitive=True):
 
 
 def replace_vars(path):
+    '''
+    Returns:
+    The string with variables like $CLOUD or %CLOUD% or %USERPROFILE%
+    replaced regardless of the operating system, or None if that is the
+    entire path and the value is blank (not detected by morefolders by
+    any means).
+    '''
     for old, new in substitutions.items():
+        if new is None:
+            # Ignore it. It is ok to be None, such as if no
+            #   value for $CLOUD (or %CLOUD%) was found.
+            continue
+            # raise ValueError("{} is None.".format(old))
+            if path == old:
+                # Return "" if the whole thing is blank.
+                return None
         if old.startswith("%") and old.endswith("%"):
             path = path.replace(old, new)
         else:

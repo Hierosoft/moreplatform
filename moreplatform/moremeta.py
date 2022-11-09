@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+'''
+Get more metadata than built-in packages, and further process output
+from tinytag (for music files) and PIL.ExifTags (such as for photos) to
+easily get dates in Python datetime format.
+'''
 from __future__ import print_function
 #
 # TODO: Rewrite modified date filesystem metadata according to EXIF date

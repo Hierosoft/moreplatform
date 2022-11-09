@@ -32,7 +32,47 @@ if sys.version_info.major < 3:
     ModuleNotFoundError = ImportError
 
 
+verbosity = 0
+for argI in range(1, len(sys.argv)):
+    arg = sys.argv[argI]
+    if arg.startswith("--"):
+        if arg == "--verbosity":
+            verbosity = 1
+        elif arg == "--debug":
+            verbosity = 2
+
+
+def get_verbosity():
+    return verbosity
+
+
+def set_verbosity(level):
+    global verbosity
+    verbosity_levels = [True, False, 0, 1, 2]
+    if level not in verbosity_levels:
+        raise ValueError("verbosity must be 0-2 but was {}".format(verbosity))
+    verbosity = level
+
+
 def echo0(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+
+def echo1(*args, **kwargs):
+    if not verbosity:
+        return
+    print(*args, file=sys.stderr, **kwargs)
+
+
+def echo2(*args, **kwargs):
+    if verbosity < 2:
+        return
+    print(*args, file=sys.stderr, **kwargs)
+
+
+def echo3(*args, **kwargs):
+    if verbosity < 3:
+        return
     print(*args, file=sys.stderr, **kwargs)
 
 
@@ -77,6 +117,39 @@ else:
         logsDir = os.path.join(profile, ".var", "log")
         profiles = "/home"
         temporaryFiles = "/tmp"
+
+# TODO: Consider using os.path.expanduser('~') to get profile.
+if profile != os.path.expanduser('~'):
+    echo0("[moreplatform] Warning:")
+    echo0('  profile="{}"'.format(profile))
+    echo0('  != os.path.expanduser('~')="{}"'.format(os.path.expanduser('~')))
+
+
+USER_DIR_NAME = os.path.split(profile)[1]
+# ^ may differ from os.getlogin() getpass.getuser()
+if USER_DIR_NAME != os.getlogin():
+    echo1("Verbose warning:")
+    echo1('  USER_DIR_NAME="{}"'.format(USER_DIR_NAME))
+    echo1('  != os.getlogin()="{}"'.format(os.getlogin()))
+
+try:
+    import getpass  # optional
+    if USER_DIR_NAME != getpass.getuser():
+        echo1("Verbose warning:")
+        echo1('  USER_DIR_NAME="{}"'.format(USER_DIR_NAME))
+        echo1('  != getpass.getuser()="{}"'.format(getpass.getuser()))
+except ModuleNotFoundError as ex:
+    echo1(str(ex))
+
+try:
+    import pwd  # optional
+    if USER_DIR_NAME != pwd.getpwuid(os.getuid())[0]:
+        echo1("Verbose warning:")
+        echo1('  USER_DIR_NAME="{}"'.format(USER_DIR_NAME))
+        echo1('  != pwd.getpwuid(os.getuid())[0]="{}"'
+              ''.format(pwd.getpwuid(os.getuid())[0]))
+except ModuleNotFoundError as ex:
+    echo1(str(ex))
 
 localBinPath = os.path.join(local, "bin")
 

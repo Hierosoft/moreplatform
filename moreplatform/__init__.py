@@ -122,7 +122,7 @@ else:
 if profile != os.path.expanduser('~'):
     echo0("[moreplatform] Warning:")
     echo0('  profile="{}"'.format(profile))
-    echo0('  != os.path.expanduser('~')="{}"'.format(os.path.expanduser('~')))
+    echo0('  != os.path.expanduser("~")="{}"'.format(os.path.expanduser('~')))
 
 
 USER_DIR_NAME = os.path.split(profile)[1]

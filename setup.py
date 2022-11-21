@@ -51,11 +51,13 @@ setuptools.setup(
     # See <https://stackoverflow.com/questions/27784271/
     # how-can-i-use-setuptools-to-generate-a-console-scripts-entry-
     # point-which-calls>
+    '''
     entry_points={
         'console_scripts': [
             'checkpath=moreplatform.checkpath:main',
         ],
     },
+    '''
     install_requires=install_requires,
     #     versionedModule['urllib'],
     # ^ "ERROR: Could not find a version that satisfies the requirement
